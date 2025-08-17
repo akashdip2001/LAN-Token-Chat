@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>LAN Chat</title>
+  <style>
+    body { font-family: sans-serif; background:#f4f6fb; margin:0; padding:20px; }
+    h2 { margin:0 0 10px; }
+    #chat { border:1px solid #ccc; padding:10px; height:300px; overflow-y:auto; background:#fff; border-radius:8px; }
+    input, button { padding:8px; margin:4px; border-radius:6px; border:1px solid #aaa; }
+    #controls { margin-bottom:10px; }
+  </style>
+</head>
+<body>
+  <h2>LAN Chat 💬</h2>
+
+  <div id="controls">
+    <button onclick="joinPublic()">Join Public Chat</button>
+    <button onclick="createRoom()">Create Private Space</button>
+    <input id="tokenInput" placeholder="Enter token to join private"/>
+    <button onclick="joinPrivate()">Join Private Space</button>
+  </div>
+
+  <div id="chat"></div>
+
+  <div id="sendBox" style="margin-top:10px; display:none;">
+    <input id="msg" placeholder="Type message..." style="width:70%"/>
+    <button onclick="send()">Send</button>
+  </div>
+
+  <script>
+    let ws, chatBox=document.getElementById("chat");
+
+    function log(msg){
+      let p=document.createElement("div");
+      p.textContent=msg;
+      chatBox.appendChild(p);
+      chatBox.scrollTop=chatBox.scrollHeight;
+    }
+
+    function joinPublic(){
+      connect("public");
+    }
+
+    async function createRoom(){
+      let res = await fetch("/create_room");
+      let data = await res.json();
+      alert("Private room created! Share this token: "+data.token);
+      connect(data.token);
+    }
+
+    function joinPrivate(){
+      let token=document.getElementById("tokenInput").value.trim();
+      if(token) connect(token);
+    }
+
+    function connect(room){
+      ws = new WebSocket(`ws://${location.host}/ws/${room}`);
+      ws.onopen = ()=>{ log("✅ Connected to "+room); document.getElementById("sendBox").style.display="block"; };
+      ws.onmessage = (e)=> log(e.data);
+      ws.onclose = ()=> log("❌ Disconnected");
+    }
+
+    function send(){
+      let msg=document.getElementById("msg").value;
+      if(msg && ws){
+        ws.send(msg);
+        document.getElementById("msg").value="";
+      }
+    }
+  </script>
+</body>
+</html>
