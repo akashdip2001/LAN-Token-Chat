@@ -58,6 +58,8 @@ python main.py
 
 ### 4. Open in browser
 
+<img width="100%" alt="Screenshot (692)" src="https://github.com/user-attachments/assets/1da3302e-ec00-41c5-92e0-8fb59cf49cd5" />
+
 On the host computer:
 
 ```
@@ -74,6 +76,11 @@ http://<your-local-ip>:8000
 
 ## 🛠️ How It Works
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/3c388fae-7b66-45ae-8427-6a551bb29fda" width="72%" /> &nbsp; &nbsp;
+  <img src="https://github.com/user-attachments/assets/301d9ca9-4f82-424b-afea-96cda52d02f9" width="19%" /> 
+</p>
+
 ### Public Chat
 
 * Everyone can join by pressing **Join Public Chat**.
@@ -89,6 +96,7 @@ http://<your-local-ip>:8000
 
 ---
 
+
 ```
 [12:45:01] Alice: Hello everyone!
 [12:45:15] Bob: Hi Akashdip 👋
@@ -100,6 +108,8 @@ http://<your-local-ip>:8000
 [13:10:22] Alice: Secret group chat 🕵️
 [13:10:45] Bob: Only we can see this 😎
 ```
+
+![img 3 (2)](https://github.com/user-attachments/assets/ed027bf3-7413-4e23-9384-0e0bcf2ea65d)
 
 ---
 
@@ -113,8 +123,6 @@ http://<your-local-ip>:8000
 
 ## 🔮 Future Ideas
 
-* Add **usernames** so people know who sent the message.
-* Option to **list active private rooms**.
 * Encrypt messages for extra privacy.
 
 ---
