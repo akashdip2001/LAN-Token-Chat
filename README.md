@@ -4,6 +4,7 @@ A lightweight **LAN chat app** built with **FastAPI** + **WebSockets**.
 Supports both **public chatrooms** (everyone on the network) and **token-protected private spaces** for secure group conversations.  
 
 ![img 01 (1)](https://github.com/user-attachments/assets/b5d9a945-99d1-4b7c-b939-cb12c226cbe1)
+> First update `No CSS`
 
 Works directly in the browser — no extra software needed!  
 Supports **desktop & mobile** displays.  
@@ -17,6 +18,9 @@ Supports **desktop & mobile** displays.
 - 🕒 **Timestamps** on every message.
 - 📱 **Responsive UI** — works on PC & mobile.
 - ⚡ Powered by **FastAPI** + **WebSockets**.
+
+![IMG_20250817_221919211_HDR](https://github.com/user-attachments/assets/722b68af-6918-4e4a-971d-0bf57f2ef343)
+> Second Update
 
 ---
 
