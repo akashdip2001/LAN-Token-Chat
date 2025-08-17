@@ -3,6 +3,8 @@
 A lightweight **LAN chat app** built with **FastAPI** + **WebSockets**.  
 Supports both **public chatrooms** (everyone on the network) and **token-protected private spaces** for secure group conversations.  
 
+<img width="100%" alt="img" src="https://github.com/user-attachments/assets/27a7d9d2-f623-4cd7-bd47-2a69034310a2" />
+
 Works directly in the browser — no extra software needed!  
 Supports **desktop & mobile** displays.  
 
@@ -34,7 +36,7 @@ LAN-Token-Chat/
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/your-username/LAN-Token-Chat.git
+git clone https://github.com/akashdip2001/LAN-Token-Chat.git
 cd LAN-Token-Chat
 ````
 
