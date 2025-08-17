@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Public Chat</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="wrap chat-wrap">
+  <header class="header">
+    <div class="brand">Public Chat</div>
+    <div class="header-actions">
+      <button onclick="location.href='index.html'" class="glass-btn">Home</button>
+      <button id="openJoinPrivate" class="glass-btn">Join Private Channel</button>
+    </div>
+  </header>
+
+  <div class="split">
+    <main class="chat-card">
+      <div class="chat-top">
+        <div class="room-label">Public</div>
+        <div class="controls">
+          <button id="minimizePublic" class="icon-btn">_</button>
+        </div>
+      </div>
+
+      <div id="messages" class="messages"></div>
+
+      <div class="input-row">
+        <input id="msgInput" placeholder="Write a message..." />
+        <button id="sendBtn" class="glass-btn primary">Send</button>
+      </div>
+    </main>
+
+    <aside class="side-card">
+      <h4>Online Users</h4>
+      <div id="onlineUsers" class="online-list"></div>
+      <div style="margin-top:12px">
+        <button id="btnRequestPrivate" class="glass-btn">Request Private Chat</button>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- reuse the same token modal -->
+<div id="tokenModalBg" class="modal-bg" aria-hidden="true">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">Private Tokens</div>
+      <button id="closeModal" class="icon-btn">✕</button>
+    </div>
+    <div class="muted small">Server tokens — copy to share or delete to remove.</div>
+    <div id="tokenList" class="token-list" aria-live="polite"></div>
+    <div class="modal-actions">
+      <button id="btnGenerate" class="glass-btn primary">Create New Token</button>
+      <button id="btnRefreshTokens" class="glass-btn">Refresh</button>
+    </div>
+  </div>
+</div>
+
+<script src="/static/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+/* style.css - responsive, glass UI, modal + chat bubbles */
+
+:root{
+  --bg: linear-gradient(135deg,#0b1020,#1a2238);
+  --card: rgba(255,255,255,.04);
+  --fg: #eaf0ff;
+  --accent: #7aa2ff;
+  --glass: rgba(255,255,255,.06);
+  --border: rgba(255,255,255,.12);
+  --muted: rgba(234,240,255,.7);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--fg);}
+.wrap{max-width:1100px;margin:0 auto;padding:18px}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.brand{font-size:20px;font-weight:700}
+.header-actions{display:flex;gap:8px;align-items:center}
+
+/* Buttons */
+.glass-btn{padding:8px 12px;border-radius:12px;border:1px solid var(--border);background:linear-gradient(145deg,rgba(255,255,255,.03),rgba(255,255,255,.01));backdrop-filter: blur(8px);cursor:pointer;color:var(--fg)}
+.glass-btn.primary{background:linear-gradient(135deg,#2b6fff,#1f44b4);box-shadow:0 6px 18px rgba(27,77,255,.12)}
+.icon-btn{padding:6px 10px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.03);cursor:pointer}
+
+/* Grid */
+.grid{display:grid;grid-template-columns:1fr .9fr;gap:14px}
+@media(max-width:840px){ .grid{grid-template-columns:1fr; } .header-actions{flex-wrap:wrap} }
+
+/* cards */
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.preview-card{min-height:220px}
+.tokens-card{min-height:220px}
+
+/* preview */
+.preview-box{height:120px;overflow:auto;background:rgba(0,0,0,.12);border-radius:10px;padding:10px;margin-top:10px}
+.preview-msg{padding:8px;border-radius:10px;background:rgba(255,255,255,.02);margin:6px 0}
+
+/* tokens list */
+.token-list{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+.token-row{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.02);border-radius:10px;padding:8px;border:1px dashed var(--border)}
+.token-index{width:28px;text-align:center;font-weight:700}
+.chip{font-family:ui-monospace,monospace;background:rgba(0,0,0,.25);padding:6px 8px;border-radius:8px}
+
+/* modal */
+.modal-bg{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.5);z-index:60}
+.modal-bg.show{display:flex}
+.modal{width:min(640px,94vw);background:linear-gradient(145deg,rgba(255,255,255,.03),rgba(255,255,255,.01));border-radius:12px;padding:16px;border:1px solid var(--border);backdrop-filter: blur(10px);transform:translateY(16px);opacity:0;transition:all .18s ease}
+.modal-bg.show .modal{transform:none;opacity:1}
+.modal-head{display:flex;justify-content:space-between;align-items:center}
+.modal-title{font-weight:700}
+.modal-actions{display:flex;gap:8px;margin-top:12px}
+
+/* chat layout */
+.chat-wrap{padding:0}
+.split{display:flex;gap:12px;height:80vh}
+@media(max-width:900px){ .split{flex-direction:column;height:auto} }
+
+.chat-card{flex:1;display:flex;flex-direction:column;background:var(--card);border-radius:12px;padding:8px;min-height:400px}
+.side-card{width:240px;background:var(--card);border-radius:12px;padding:8px;min-height:400px}
+@media(max-width:900px){ .side-card{width:100%} }
+
+/* messages */
+.messages{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:6px}
+.msg-bubble{max-width:78%;padding:10px 12px;border-radius:12px;position:relative;color:#fff}
+.msg-self{align-self:flex-end;background:linear-gradient(90deg,#2b6fff,#1f44b4)}
+.msg-other{align-self:flex-start;background:#2b2f3f}
+.msg-meta{font-size:11px;opacity:.85;margin-top:6px}
+
+/* input */
+.input-row{display:flex;gap:8px;padding:10px;margin-top:8px;background:transparent}
+.input-row input{flex:1;padding:10px;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.02);color:var(--fg)}
+.input-row button{padding:8px 12px;border-radius:10px}
+
+/* online users */
+.online-list{display:flex;flex-direction:column;gap:6px;padding:6px;max-height:48vh;overflow:auto}
+.user-pill{padding:8px;border-radius:10px;background:rgba(255,255,255,.02);display:flex;justify-content:space-between;align-items:center}
+
+/* tabs for private */
+.tabs-row{display:flex;align-items:center;gap:8px;padding:8px}
+.tabs{display:flex;gap:8px;overflow:auto}
+.tab-btn{padding:8px 12px;border-radius:10px;background:rgba(255,255,255,.02);border:1px solid var(--border);cursor:pointer}
+.tab-btn.active{background:linear-gradient(90deg,#2b6fff,#1f44b4);color:#fff}
+
+/* small helpers */
+.muted{color:var(--muted)}
+.small{font-size:13px}

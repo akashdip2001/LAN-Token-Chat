@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Private Chat</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="wrap chat-wrap">
+  <header class="header">
+    <div class="brand">Private Chats</div>
+    <div class="header-actions">
+      <button onclick="location.href='index.html'" class="glass-btn">Home</button>
+      <button onclick="location.href='public.html'" class="glass-btn">Join Public</button>
+    </div>
+  </header>
+
+  <div class="tabs-row">
+    <div id="tabs" class="tabs"></div>
+    <div style="flex:1"></div>
+    <button id="btnMinimizePrivate" class="icon-btn">_</button>
+  </div>
+
+  <main class="private-area">
+    <div id="privateMessages" class="messages"></div>
+
+    <div class="input-row">
+      <input id="privateInput" placeholder="Message in private" />
+      <button id="privateSend" class="glass-btn primary">Send</button>
+    </div>
+  </main>
+</div>
+
+<!-- token modal reused -->
+<div id="tokenModalBg" class="modal-bg" aria-hidden="true">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">Private Tokens</div>
+      <button id="closeModal" class="icon-btn">✕</button>
+    </div>
+    <div class="muted small">Server tokens — copy to share or delete to remove.</div>
+    <div id="tokenList" class="token-list" aria-live="polite"></div>
+    <div class="modal-actions">
+      <button id="btnGenerate" class="glass-btn primary">Create New Token</button>
+      <button id="btnRefreshTokens" class="glass-btn">Refresh</button>
+    </div>
+  </div>
+</div>
+
+<script src="/static/script.js"></script>
+</body>
+</html>

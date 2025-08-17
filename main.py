@@ -1,9 +1,11 @@
 import socket
 import uvicorn
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from fastapi.responses import HTMLResponse, PlainTextResponse
+from fastapi.responses import HTMLResponse, PlainTextResponse   
 from fastapi.staticfiles import StaticFiles
 from datetime import datetime
+from fastapi import HTTPException
+from fastapi.responses import FileResponse
 import secrets
 import json
 import os
@@ -11,46 +13,69 @@ from typing import Dict, List, Tuple
 
 app = FastAPI(title="LAN Token Chat")
 
-# Rooms:
-# - "public": list of (ws, username)
-# - "room_<token>": list of (ws, username)
+# Rooms: {"public": [(ws, username)], "room_<token>": [(ws, username)]}
 rooms: Dict[str, List[Tuple[WebSocket, str]]] = {"public": []}
-
-# token -> room_name (for private rooms)
-tokens: Dict[str, str] = {}
-
-# In public room, track username -> websocket for signaling (private requests)
-public_users: Dict[str, WebSocket] = {}
+tokens: Dict[str, str] = {}   # token -> room
+public_users: Dict[str, WebSocket] = {}  # track users in public
 
 # -------------------------
-# Serve SPA index
+# Serve static frontend
 # -------------------------
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 @app.get("/")
 async def index():
-    if os.path.exists("index.html"):
-        return HTMLResponse(open("index.html", encoding="utf-8").read())
-    return PlainTextResponse("index.html not found. Place it next to main.py.", status_code=404)
+    if os.path.exists("static/index.html"):
+        return HTMLResponse(open("static/index.html", encoding="utf-8").read())
+    return PlainTextResponse("Place index.html in /static folder", status_code=404)
 
 # -------------------------
 # Create a private room token
 # -------------------------
 @app.post("/api/create_token")
 async def create_token():
-    token = secrets.token_hex(3)  # short, e.g., "a3f9b2"
+    token = secrets.token_hex(3)
     room = f"room_{token}"
     tokens[token] = room
     rooms.setdefault(room, [])
     return {"token": token}
 
-# Optional: check which tokens exist (for debugging)
 @app.get("/api/tokens")
 async def list_tokens():
     return {"tokens": list(tokens.keys())}
 
+@app.delete("/api/tokens/{token}")
+async def delete_token(token: str):
+    """Delete a token (server-side) if exists."""
+    if token not in tokens:
+        raise HTTPException(status_code=404, detail="Token not found")
+    room = tokens.pop(token)
+    # optionally remove the room contents if you want:
+    rooms.pop(room, None)
+    return {"deleted": token}
+
 # -------------------------
-# WebSocket handler (JSON protocol)
-# Path: /ws/{room}/{username}
-# room = "public" OR token (e.g., "a3f9b2")
+# Serve HTML pages
+# -------------------------
+# -------------------------
+# Serve landing page (index.html from /static)
+# -------------------------
+@app.get("/")
+async def index():
+    return FileResponse(os.path.join("static", "index.html"))
+
+# -------------------------
+# Serve any other .html page from /static
+# -------------------------
+@app.get("/{page_name}")
+async def serve_page(page_name: str):
+    file_path = os.path.join("static", page_name)
+    if os.path.exists(file_path):
+        return FileResponse(file_path)
+    return PlainTextResponse(f"Page '{page_name}' not found", status_code=404)
+
+# -------------------------
+# WebSocket Chat Handler
 # -------------------------
 @app.websocket("/ws/{room}/{username}")
 async def ws_handler(ws: WebSocket, room: str, username: str):
@@ -66,15 +91,11 @@ async def ws_handler(ws: WebSocket, room: str, username: str):
         await ws.close()
         return
 
-    # Add to room
     rooms[target_room].append((ws, username))
-
-    # Public user map (for signaling)
     if target_room == "public":
         public_users[username] = ws
         await broadcast_users()
 
-    # Announce join
     await broadcast(
         target_room,
         {"type": "system", "message": f"👋 {username} joined {room}", "ts": timestamp_str()}
@@ -85,82 +106,61 @@ async def ws_handler(ws: WebSocket, room: str, username: str):
             raw = await ws.receive_text()
             data = parse_json(raw)
 
-            # default = chat message
-            if not data:
+            if not data:  # plain text
                 await broadcast(target_room, chat_payload(username, raw))
                 continue
 
-            msg_type = data.get("type")
+            t = data.get("type")
 
-            if msg_type == "chat":
-                text = data.get("text", "")
-                await broadcast(target_room, chat_payload(username, text))
+            if t == "chat":
+                await broadcast(target_room, chat_payload(username, data.get("text", "")))
 
-            elif msg_type == "private_request":
-                # Only valid from public room
-                if target_room != "public":
-                    continue
+            elif t == "private_request" and target_room == "public":
                 to_user = data.get("to")
-                from_user = username
-                # Generate a temp token for this request
                 token = data.get("token") or secrets.token_hex(3)
                 room_name = tokens.get(token) or f"room_{token}"
                 if token not in tokens:
                     tokens[token] = room_name
                     rooms.setdefault(room_name, [])
-                # Relay to target user if online
                 to_ws = public_users.get(to_user)
                 if to_ws:
                     await safe_send(to_ws, {
                         "type": "private_invite",
-                        "from": from_user,
-                        "token": token,
-                        "ts": timestamp_str()
-                    })
-
-            elif msg_type == "private_accept":
-                # Relay acceptance back to requester (still via public signaling)
-                if target_room != "public":
-                    continue
-                to_user = data.get("to")
-                token = data.get("token")
-                to_ws = public_users.get(to_user)
-                if to_ws:
-                    await safe_send(to_ws, {
-                        "type": "private_accept",
-                        "from": username,  # the one accepting
-                        "token": token,
-                        "ts": timestamp_str()
-                    })
-
-            elif msg_type == "private_deny":
-                if target_room != "public":
-                    continue
-                to_user = data.get("to")
-                token = data.get("token")
-                to_ws = public_users.get(to_user)
-                if to_ws:
-                    await safe_send(to_ws, {
-                        "type": "private_deny",
                         "from": username,
                         "token": token,
                         "ts": timestamp_str()
                     })
 
-            elif msg_type == "who":
-                # send back current users for this room
+            elif t == "private_accept" and target_room == "public":
+                to_ws = public_users.get(data.get("to"))
+                if to_ws:
+                    await safe_send(to_ws, {
+                        "type": "private_accept",
+                        "from": username,
+                        "token": data.get("token"),
+                        "ts": timestamp_str()
+                    })
+
+            elif t == "private_deny" and target_room == "public":
+                to_ws = public_users.get(data.get("to"))
+                if to_ws:
+                    await safe_send(to_ws, {
+                        "type": "private_deny",
+                        "from": username,
+                        "token": data.get("token"),
+                        "ts": timestamp_str()
+                    })
+
+            elif t == "who":
                 await safe_send(ws, {
                     "type": "users",
                     "room": target_room,
                     "users": [u for _, u in rooms[target_room]]
                 })
 
-            # else: ignore unknown types
-
     except WebSocketDisconnect:
         pass
     finally:
-        # Remove from room
         try:
             rooms[target_room].remove((ws, username))
         except ValueError:
@@ -184,19 +184,18 @@ def timestamp_str():
 def chat_payload(username: str, text: str):
     return {"type": "chat", "from": username, "text": text, "ts": timestamp_str()}
 
-async def broadcast(room_name: str, payload: dict):
+async def broadcast(room: str, payload: dict):
     dead: List[Tuple[WebSocket, str]] = []
-    for conn, _ in rooms.get(room_name, []):
+    for conn, u in rooms.get(room, []):
         if not await safe_send(conn, payload):
-            dead.append((conn, _))
+            dead.append((conn, u))
     for d in dead:
         try:
-            rooms[room_name].remove(d)
+            rooms[room].remove(d)
         except ValueError:
             pass
 
 async def broadcast_users():
-    """Broadcast public user list to everyone in public room."""
     payload = {
         "type": "users",
         "room": "public",
@@ -212,14 +211,9 @@ async def safe_send(ws: WebSocket, obj: dict) -> bool:
         return False
 
 def parse_json(text: str):
-    try:
-        return json.loads(text)
-    except Exception:
-        return None
+    try: return json.loads(text)
+    except: return None
 
-# -------------------------
-# Utility: get LAN IP
-# -------------------------
 def get_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
@@ -237,6 +231,6 @@ def get_ip():
 if __name__ == "__main__":
     ip = get_ip()
     port = 8000
-    print(f"\n🔗 Open on this PC:   http://127.0.0.1:{port}")
-    print(f"📡 Open on LAN:       http://{ip}:{port}\n")
+    print(f"\n🔗 Local:  http://127.0.0.1:{port}")
+    print(f"📡 LAN:    http://{ip}:{port}\n")
     uvicorn.run("main:app", host="0.0.0.0", port=port, reload=True)
