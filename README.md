@@ -3,7 +3,7 @@
 A lightweight **LAN chat app** built with **FastAPI** + **WebSockets**.  
 Supports both **public chatrooms** (everyone on the network) and **token-protected private spaces** for secure group conversations.  
 
-<img width="100%" alt="img" src="https://github.com/user-attachments/assets/27a7d9d2-f623-4cd7-bd47-2a69034310a2" />
+![img 01 (1)](https://github.com/user-attachments/assets/b5d9a945-99d1-4b7c-b939-cb12c226cbe1)
 
 Works directly in the browser — no extra software needed!  
 Supports **desktop & mobile** displays.  
@@ -87,7 +87,7 @@ http://<your-local-ip>:8000
 
 ```
 [12:45:01] Alice: Hello everyone!
-[12:45:15] Bob: Hi Alice 👋
+[12:45:15] Bob: Hi Akashdip 👋
 ```
 
 *Private Chat (Token: 7fa21bc3)*
