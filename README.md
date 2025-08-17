@@ -11,6 +11,14 @@ Supports **desktop & mobile** displays.
 
 ---
 
+<div style="display: flex; align-items: center; gap: 10px;" align="center">
+  
+# ⭐ main [**`project concept`**](https://github.com/akashdip2001/Token-Based-Authentication) ⭐
+### `Token-Based-Authentication`
+</div>
+
+---
+
 ## ✨ Features
 - 🌐 **Public Chat** — all devices on the LAN can join easily.
 - 🔑 **Private Chat (Token)** — create a personal space with a unique token.  
@@ -18,6 +26,9 @@ Supports **desktop & mobile** displays.
 - 🕒 **Timestamps** on every message.
 - 📱 **Responsive UI** — works on PC & mobile.
 - ⚡ Powered by **FastAPI** + **WebSockets**.
+
+</br>
+</br>
 
 ![IMG_20250817_221919211_HDR](https://github.com/user-attachments/assets/722b68af-6918-4e4a-971d-0bf57f2ef343)
 > Second Update
