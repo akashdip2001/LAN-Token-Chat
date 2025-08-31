@@ -222,6 +222,7 @@ let username = localStorage.getItem("username");
       if (!tok) { alert('Enter token'); return; }
       joinPrivateByToken(tok);
     });
+    $('#tokenModalClose')?.addEventListener('click', closeTokenModal);
 
     // preview websocket for landing page
     (function previewSocket() {
@@ -314,7 +315,7 @@ let username = localStorage.getItem("username");
       alert('Created token: ' + tok);
       renderTokenModal();
     });
-    $('#closeModal')?.addEventListener('click', closeTokenModal);
+    $('#tokenModalClose')?.addEventListener('click', closeTokenModal);
     $('#btnRefreshTokens')?.addEventListener('click', renderTokenModal);
     $('#openJoinPrivate')?.addEventListener('click', () => openTokenModal());
 
@@ -355,7 +356,7 @@ let username = localStorage.getItem("username");
     });
 
     // token modal close wiring
-    $('#closeModal')?.addEventListener('click', closeTokenModal);
+    // $('#closeModal')?.addEventListener('click', closeTokenModal);
     $('#btnGenerate')?.addEventListener('click', async () => {
       const t = await createToken();
       alert('Created token: ' + t);
@@ -494,7 +495,7 @@ let username = localStorage.getItem("username");
     $('#btnGenerate')?.addEventListener('click', async () => {
       const t = await createToken(); alert('Created: ' + t); renderTokenModal();
     });
-    $('#closeModal')?.addEventListener('click', closeTokenModal);
+    // $('#closeModal')?.addEventListener('click', closeTokenModal);
     renderTokenModal();
   }
 

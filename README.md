@@ -28,6 +28,63 @@ Supports **desktop & mobile** displays.
 - ⚡ Powered by **FastAPI** + **WebSockets**.
 
 </br>
+
+<details>
+  <summary style="opacity: 0.85;"><b>🔐 User Session Features</b></summary><br>
+
+---
+
+## 🔐 User Session Features
+
+1. **First-Time Login**
+
+   * When a new user opens the app, they are prompted to enter:
+
+     * A **username**
+     * A **password** (set by the user, minimum 4 characters for easier recall)
+   * The username and password are stored locally in the browser (`localStorage`) as part of a session object.
+
+2. **Password Security (Masked View)**
+
+   * Whenever the password is shown in popups, only the 2nd and 3rd characters are hidden.
+   * Examples:
+
+     * `1234` → `1**4`
+     * `12345` → `1**45`
+     * `abcdef` → `a**def`
+
+3. **30-Minute Session Timeout**
+
+   * If the page is refreshed or reopened after **30 minutes of inactivity**, a popup appears:
+
+     * **Option 1:** Continue with the saved username (requires entering the saved password).
+     * **Option 2:** Start a new session with a new username and password (clears old data).
+
+4. **Username Bar Interaction**
+
+   * Clicking the username at the top of the page shows a popup with:
+
+     * The current username
+     * The current password (masked)
+     * Two buttons:
+
+       * **“Use another username”** → allows setting a new username & password.
+       * **“Cancel”** → closes the popup without changes.
+
+5. **Reload & Cache Refresh**
+
+   * Choosing to reset (new session) clears all stored data, including username, password, and messages.
+   * On reset, the page reloads, ensuring that any **new CSS/JS updates** are also applied.
+
+---
+
+⚡ This makes the app behave more like a real chat system with **basic account persistence**, **session expiry**, and **manual username management**, while still being lightweight and browser-based.
+
+</details>
+
+---
+
+</br>
 </br>
 
 ![IMG_20250817_221919211_HDR](https://github.com/user-attachments/assets/722b68af-6918-4e4a-971d-0bf57f2ef343)
