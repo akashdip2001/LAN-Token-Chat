@@ -306,6 +306,9 @@ let username = localStorage.getItem("username");
 
     // allow click to change
     document.getElementById("username-display").onclick = askUsername;
+
+    // reset button
+    document.getElementById("resetBtn")?.addEventListener("click", resetAndReload);
   });
 
   function setupPublic() {
@@ -434,6 +437,27 @@ let username = localStorage.getItem("username");
   }
 
   function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]); }
+
+
+  function resetAndReload() {
+    if (!navigator.onLine) {
+      alert("Reset requires internet connection. Please reconnect and try again.");
+      return;
+    }
+
+    const confirmReset = confirm(
+      "After reset, you have to enter your password to continue or create a new user.\n\nDo you want to proceed?"
+    );
+
+    if (confirmReset) {
+      // clear only session-related data (not chat messages)
+      localStorage.removeItem("chat_user");
+      localStorage.removeItem("chat_username");
+
+      location.reload(true); // force reload so new CSS/JS reflect
+    }
+  }
+
 
   /* ------------------ Private page logic ------------------ */
   if (location.pathname.endsWith('private.html')) {

@@ -11,8 +11,11 @@
 <body>
 
   <div id="username-bar">
-    Username: <span id="username-display" class="clickable"></span>
+    Username:
+    <span id="username-display" class="clickable"></span>
+    <button id="resetBtn" class="glass-btn small danger">Reset & Reload</button>
   </div>
+
 
 
   <div class="wrap">
@@ -71,7 +74,8 @@
     <div class="modal">
       <div class="modal-head">
         <div class="modal-title">Private Tokens</div>
-        <button id="closeModal" class="icon-btn">✕</button>
+        <button id="tokenModalClose" class="icon-btn close">✕</button>
+
       </div>
 
       <div class="muted small">Tokens created on the server. Copy to share or delete to remove.</div>
