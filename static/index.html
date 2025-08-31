@@ -37,7 +37,8 @@
 
       <aside class="card tokens-card">
         <h3>🔒 Private Channels</h3>
-        <div class="muted" style="margin-bottom: 15px">Create or join a private channel by token (shared across devices).</div>
+        <div class="muted" style="margin-bottom: 15px">Create or join a private channel by token (shared across
+          devices).</div>
 
         <div class="join-row token-box">
           <input id="joinToken" placeholder="Enter token to join" class="token-input" />
@@ -84,6 +85,34 @@
     </div>
   </div>
 
+  <!-- Footer Ticker -->
+  <div class="ticker-container">
+    <div class="ticker-text">
+      Created by <strong>Akashdip Mahapatra</strong> | Project idea taken by
+      <a href="https://github.com/shayani2003/Diabetes-Detection-System" target="_blank">
+        Shayani Bhowmik
+      </a>
+    </div>
+    <div class="ticker-text">
+      Created by <strong>Akashdip Mahapatra</strong> | Project idea taken by
+      <a href="https://github.com/shayani2003/Chat-App" target="_blank">
+        Shayani Bhowmik
+      </a>
+    </div>
+  </div>
+
+  <script>
+    const ticker = document.querySelector('.ticker-container');
+    const texts = ticker.querySelectorAll('.ticker-text');
+
+    ticker.addEventListener('mouseover', () => {
+      texts.forEach(el => el.style.animationPlayState = 'paused');
+    });
+
+    ticker.addEventListener('mouseout', () => {
+      texts.forEach(el => el.style.animationPlayState = 'running');
+    });
+  </script>
   <script src="/static/script.js"></script>
 </body>
 
