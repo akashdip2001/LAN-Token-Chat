@@ -15,6 +15,14 @@ let username = localStorage.getItem("username");
   const $$ = s => Array.from(document.querySelectorAll(s));
   const api = path => `/api${path}`;
 
+  function maskPassword(p) {
+    if (!p) return '***';
+    const arr = p.split('');
+    if (arr.length >= 2) arr[1] = '*';   // hide 2nd
+    if (arr.length >= 3) arr[2] = '*';   // hide 3rd
+    return arr.join('');
+  }
+
   // ------------------ Session Management ------------------ //
   function initUserSession() {
     let data = JSON.parse(localStorage.getItem("chat_user") || "null");
@@ -30,8 +38,7 @@ let username = localStorage.getItem("username");
       data = { username: u.trim(), password: pass.trim(), lastActive: Date.now() };
       localStorage.setItem("chat_user", JSON.stringify(data));
       alert(`Welcome ${data.username}! Your account has been created.`);
-    }
-    else {
+    } else {
       // Returning user, check 30 mins expiry
       const THIRTY_MIN = 30 * 60 * 1000;
       if (Date.now() - data.lastActive > THIRTY_MIN) {
@@ -252,18 +259,42 @@ let username = localStorage.getItem("username");
     setupPublic();
   }
 
-  async function askUsername() {
-    let input = prompt("Enter your username:");
-    if (!input) input = "Guest";
+  function askUsername() {
+    let data = JSON.parse(localStorage.getItem("chat_user") || "null");
 
-    let pass = prompt("Enter a password (min 4 characters):");
-    while (!pass || pass.length < 4) pass = prompt("Password must be at least 4 characters:");
+    if (!data) {
+      // If somehow missing, fallback to normal init
+      initUserSession();
+      return;
+    }
 
-    const data = { username: input.trim(), password: pass.trim(), lastActive: Date.now() };
-    localStorage.setItem("chat_user", JSON.stringify(data));
-    username = data.username;
-    renderUsername();
+    // Mask password: show only first & last char
+    let masked = maskPassword(data.password);
+
+    const choice = confirm(
+      `Your current username is: ${data.username}\nYour current password is: ${masked}\n\nClick OK to set another username, or Cancel to keep using current.`
+    );
+
+    if (choice) {
+      // User wants a new username/password
+      let u = prompt("Enter new username:");
+      if (!u) return; // if cancel, just return without changes
+
+      let pass = prompt("Set a new password (min 4 characters):");
+      if (!pass || pass.length < 4) {
+        alert("Password must be at least 4 characters. Keeping old account.");
+        return;
+      }
+
+      const newData = { username: u.trim(), password: pass.trim(), lastActive: Date.now() };
+      localStorage.setItem("chat_user", JSON.stringify(newData));
+      username = newData.username;
+      renderUsername();
+      alert(`Account updated! New username: ${newData.username}`);
+    }
+    // If Cancel → do nothing
   }
+
 
   function renderUsername() {
     document.getElementById("username-display").innerText = username;
