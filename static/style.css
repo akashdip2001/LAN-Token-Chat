@@ -134,12 +134,17 @@ body {
     background: linear-gradient(145deg, rgba(255, 255, 255, .03), rgba(255, 255, 255, .01));
     backdrop-filter: blur(8px);
     cursor: pointer;
-    color: var(--fg)
+    color: var(--fg);
+    transition: transform 0.15s ease;
 }
 
 .glass-btn.primary {
     background: linear-gradient(135deg, #2b6fff, #1f44b4);
     box-shadow: 0 6px 18px rgba(27, 77, 255, .12)
+}
+
+.glass-btn:hover{
+    transform: scale(1.1);
 }
 
 .icon-btn {
@@ -150,6 +155,16 @@ body {
     cursor: pointer;
     color: white;
     font-weight: bold;
+}
+
+button.icon-btn.close {
+  font-weight: bold;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+button.icon-btn.close:hover {
+  text-shadow: 0 0 6px currentColor, 0 0 12px currentColor;
+  transform: scale(1.1);
 }
 
 /* Grid */
@@ -233,6 +248,22 @@ body {
     padding: 6px 8px;
     border-radius: 8px
 }
+
+/* Token number (the pill with the 6-digit code) */
+.token-row .chip {
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  color: var(--token-color, #FFD166);      /* fallback */
+  text-shadow: 0 0 6px rgba(0,0,0,.35), 0 0 10px currentColor;
+  transition: color .25s ease;
+  animation: tokenGlow 2.8s ease-in-out infinite;
+}
+
+@keyframes tokenGlow {
+  0%, 100% { text-shadow: 0 0 8px currentColor, 0 0 2px rgba(0,0,0,.25); }
+  50%      { text-shadow: 0 0 14px currentColor, 0 0 2px rgba(0,0,0,.25); }
+}
+
 
 /* modal */
 .modal-bg {

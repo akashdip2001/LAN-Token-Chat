@@ -69,11 +69,45 @@ let username = localStorage.getItem("username");
     }
     tokens.forEach((t, i) => {
       const row = document.createElement('div'); row.className = 'token-row';
-      const idx = document.createElement('div'); idx.className = 'token-index'; idx.textContent = String(i+1);
-      const chip = document.createElement('div'); chip.className = 'chip'; chip.textContent = t;
+      const idx = document.createElement('div'); idx.className = 'token-index'; idx.textContent = String(i + 1);
+      const chip = document.createElement('div');
+      chip.className = 'chip';
+      chip.textContent = t;
+
+      // stable color assignment based on token hash
+      const CLASSIC_COLORS = [
+        '#FFD166', '#06D6A0', '#118AB2', '#EF476F', '#8E9AAF',
+        '#FF9F1C', '#2EC4B6', '#1B9AAA', '#C77DFF', '#64F3AC'
+      ];
+
+      // simple hash function: sum char codes
+      let hash = 0;
+      for (let i = 0; i < t.length; i++) {
+        hash = (hash + t.charCodeAt(i)) % CLASSIC_COLORS.length;
+      }
+
+      const color = CLASSIC_COLORS[hash];
+      chip.style.setProperty('--token-color', color);
+
       const btnCopy = document.createElement('button'); btnCopy.className = 'icon-btn'; btnCopy.textContent = 'Copy';
       const btnJoin = document.createElement('button'); btnJoin.className = 'icon-btn'; btnJoin.textContent = 'Join';
-      const btnDel = document.createElement('button'); btnDel.className = 'icon-btn'; btnDel.textContent = '✕';
+      // const btnDel = document.createElement('button'); btnDel.className = 'icon-btn'; btnDel.textContent = '✕';
+      const btnDel = document.createElement('button');
+      btnDel.className = 'icon-btn close';
+      btnDel.textContent = '✕';
+
+      // assign a random red/pink shade
+      const DELETE_COLORS = [
+        '#FF4C4C', // bright red
+        '#E63946', // crimson
+        '#FF5E78', // reddish pink
+        '#D72638', // dark scarlet
+        '#C9184A', // dark pink-red
+        '#B00020'  // material dark red
+      ];
+      const delColor = DELETE_COLORS[Math.floor(Math.random() * DELETE_COLORS.length)];
+      btnDel.style.color = delColor;
+
 
       btnCopy.onclick = () => { copyToClipboard(t); alert('Copied: ' + t); };
       btnJoin.onclick = () => { closeTokenModal(); joinPrivateByToken(t); };
@@ -125,8 +159,8 @@ let username = localStorage.getItem("username");
     });
 
     // preview websocket for landing page
-    (function previewSocket(){
-      const anon = 'preview-' + Math.random().toString(16).slice(2,6);
+    (function previewSocket() {
+      const anon = 'preview-' + Math.random().toString(16).slice(2, 6);
       const socket = new WebSocket(`ws://${location.host}/ws/public/${anon}`);
       state.previewSocket = socket;
       socket.onmessage = (ev) => {
@@ -135,9 +169,9 @@ let username = localStorage.getItem("username");
           if (p.type === 'chat') {
             pushPreview(p);
           }
-        } catch(e){ /* ignore */ }
+        } catch (e) { /* ignore */ }
       };
-      window.addEventListener('beforeunload', ()=> socket.close());
+      window.addEventListener('beforeunload', () => socket.close());
     })();
 
     // preview storage and render
@@ -161,24 +195,24 @@ let username = localStorage.getItem("username");
   }
 
   async function askUsername() {
-  let input = prompt("Enter your username:");
-  if (!input) input = "Guest";
-  username = input.trim();
-  localStorage.setItem("username", username);
-  renderUsername();
-}
+    let input = prompt("Enter your username:");
+    if (!input) input = "Guest";
+    username = input.trim();
+    localStorage.setItem("username", username);
+    renderUsername();
+  }
 
-function renderUsername() {
-  document.getElementById("username-display").innerText = username;
-}
+  function renderUsername() {
+    document.getElementById("username-display").innerText = username;
+  }
 
-document.addEventListener("DOMContentLoaded", () => {
-  if (!username) askUsername();
-  else renderUsername();
+  document.addEventListener("DOMContentLoaded", () => {
+    if (!username) askUsername();
+    else renderUsername();
 
-  // allow click to change
-  document.getElementById("username-display").onclick = askUsername;
-});
+    // allow click to change
+    document.getElementById("username-display").onclick = askUsername;
+  });
 
   function setupPublic() {
     // token modal wiring
@@ -305,7 +339,7 @@ document.addEventListener("DOMContentLoaded", () => {
     container.scrollTop = container.scrollHeight;
   }
 
-  function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
+  function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]); }
 
   /* ------------------ Private page logic ------------------ */
   if (location.pathname.endsWith('private.html')) {
