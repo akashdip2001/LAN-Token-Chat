@@ -15,6 +15,64 @@ let username = localStorage.getItem("username");
   const $$ = s => Array.from(document.querySelectorAll(s));
   const api = path => `/api${path}`;
 
+  // ------------------ Session Management ------------------ //
+  function initUserSession() {
+    let data = JSON.parse(localStorage.getItem("chat_user") || "null");
+
+    if (!data) {
+      // First-time user
+      let u = prompt("Enter username:");
+      while (!u) u = prompt("Username required:");
+
+      let pass = prompt("Set a password (min 4 characters):");
+      while (!pass || pass.length < 4) pass = prompt("Password must be at least 4 characters:");
+
+      data = { username: u.trim(), password: pass.trim(), lastActive: Date.now() };
+      localStorage.setItem("chat_user", JSON.stringify(data));
+      alert(`Welcome ${data.username}! Your account has been created.`);
+    }
+    else {
+      // Returning user, check 30 mins expiry
+      const THIRTY_MIN = 30 * 60 * 1000;
+      if (Date.now() - data.lastActive > THIRTY_MIN) {
+        showSessionPopup(data);
+        return;
+      }
+    }
+
+    // Always update last active
+    data.lastActive = Date.now();
+    localStorage.setItem("chat_user", JSON.stringify(data));
+    username = data.username;
+    renderUsername();
+  }
+
+  function showSessionPopup(data) {
+    const choice = confirm(
+      `Your current username is "${data.username}".\n\nClick OK to continue (enter password).\nClick Cancel for new username & reload.`
+    );
+    if (choice) {
+      const pass = prompt("Enter your password:");
+      if (pass === data.password) {
+        alert("Welcome back " + data.username);
+        data.lastActive = Date.now();
+        localStorage.setItem("chat_user", JSON.stringify(data));
+        username = data.username;
+        renderUsername();
+      } else {
+        alert("Wrong password. Starting new session.");
+        localStorage.removeItem("chat_user");
+        location.reload();
+      }
+    } else {
+      // New user flow
+      localStorage.removeItem("chat_user");
+      alert("Session cleared. Please reload.");
+      location.reload(true); // full reload (clear cached CSS/JS updates)
+    }
+  }
+
+
   function ensureUsername() {
     if (!state.username) {
       let u = localStorage.getItem('chat_username') || prompt("Enter username:");
@@ -197,8 +255,13 @@ let username = localStorage.getItem("username");
   async function askUsername() {
     let input = prompt("Enter your username:");
     if (!input) input = "Guest";
-    username = input.trim();
-    localStorage.setItem("username", username);
+
+    let pass = prompt("Enter a password (min 4 characters):");
+    while (!pass || pass.length < 4) pass = prompt("Password must be at least 4 characters:");
+
+    const data = { username: input.trim(), password: pass.trim(), lastActive: Date.now() };
+    localStorage.setItem("chat_user", JSON.stringify(data));
+    username = data.username;
     renderUsername();
   }
 
@@ -207,8 +270,7 @@ let username = localStorage.getItem("username");
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    if (!username) askUsername();
-    else renderUsername();
+    initUserSession();   // NEW session logic
 
     // allow click to change
     document.getElementById("username-display").onclick = askUsername;
