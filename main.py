@@ -91,15 +91,29 @@ async def ws_handler(ws: WebSocket, room: str, username: str):
         await ws.close()
         return
 
+    # ✅ Ensure username uniqueness in this room
+    existing = [u for _, u in rooms[target_room]]
+    final_username = username
+    suffix = 1
+    while final_username in existing:
+        final_username = f"{username}{suffix:02d}"
+        suffix += 1
+    username = final_username
+
+    # Add user to room
     rooms[target_room].append((ws, username))
-    if target_room == "public":
+
+    # ✅ Track only real users in public (skip previews)
+    if target_room == "public" and not username.startswith("preview"):
         public_users[username] = ws
         await broadcast_users()
 
-    await broadcast(
-        target_room,
-        {"type": "system", "message": f"👋 {username} joined {room}", "ts": timestamp_str()}
-    )
+    # ✅ Announce join (skip previews)
+    if not username.startswith("preview"):
+        await broadcast(
+            target_room,
+            {"type": "system", "message": f"👋 {username} joined {room}", "ts": timestamp_str()}
+        )
 
     try:
         while True:
@@ -161,19 +175,23 @@ async def ws_handler(ws: WebSocket, room: str, username: str):
     except WebSocketDisconnect:
         pass
     finally:
+        # Remove from room
         try:
             rooms[target_room].remove((ws, username))
         except ValueError:
             pass
 
-        if target_room == "public":
+        # ✅ Remove only real users from public_users
+        if target_room == "public" and not username.startswith("preview"):
             public_users.pop(username, None)
             await broadcast_users()
 
-        await broadcast(
-            target_room,
-            {"type": "system", "message": f"❌ {username} left {room}", "ts": timestamp_str()}
-        )
+        # ✅ Announce leave (skip previews)
+        if not username.startswith("preview"):
+            await broadcast(
+                target_room,
+                {"type": "system", "message": f"❌ {username} left {room}", "ts": timestamp_str()}
+            )
 
 # -------------------------
 # Helpers

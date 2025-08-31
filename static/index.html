@@ -1,67 +1,90 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>LAN Token Chat — Home</title>
   <link rel="stylesheet" href="/static/style.css">
 </head>
+
 <body>
-<div class="wrap">
-  <header class="header">
-    <div class="brand">LAN Token Chat</div>
-    <div class="header-actions">
-      <button id="btnCreate" class="glass-btn">Create Private Channel</button>
-      <button id="btnJoin" class="glass-btn">Join Private Channel</button>
-      <button id="btnPublic" class="glass-btn primary">Join Public Chat</button>
-    </div>
-  </header>
 
-  <main class="grid">
-    <section class="card preview-card">
-      <h3>Public Chat (live preview)</h3>
-      <div class="muted">Last two messages appear here in real time</div>
-      <div id="preview" class="preview-box"></div>
-      <div style="margin-top:10px">
-        <button id="btnJoinPublic" class="glass-btn primary">Open Public Chat</button>
+  <div id="username-bar">
+    Username: <span id="username-display" class="clickable"></span>
+  </div>
+
+
+  <div class="wrap">
+    <header class="header">
+      <div class="brand">LAN Token Chat</div>
+      <div class="header-actions">
+        <button id="btnCreate" class="glass-btn">Create Private Channel</button>
+        <button id="btnJoin" class="glass-btn">Join Private Channel</button>
+        <button id="btnPublic" class="glass-btn primary">Join Public Chat</button>
       </div>
-    </section>
+    </header>
 
-    <aside class="card tokens-card">
-      <h3>Private Channels</h3>
-      <div class="muted">Create or join a private channel by token (shared across devices).</div>
+    <main class="grid">
+      <section class="card preview-card">
+        <h3>Public Chat (live preview)</h3>
+        <div class="muted">Last two messages appear here in real time</div>
+        <div id="preview" class="preview-box"></div>
+        <div style="margin-top:10px">
+          <button id="btnJoinPublic" class="glass-btn primary">Open Public Chat</button>
+        </div>
+      </section>
 
-      <div class="join-row">
-        <input id="joinToken" placeholder="Enter token to join" class="token-input" />
-        <button id="btnJoinByToken" class="glass-btn">Join</button>
+      <!-- <aside class="card tokens-card">
+        <h3>Private Channels</h3>
+        <div class="muted">Create or join a private channel by token (shared across devices).</div>
+
+        <div class="join-row">
+          <input id="joinToken" placeholder="Enter token to join" class="token-input" />
+          <button id="btnJoinByToken" class="glass-btn">Join</button>
+        </div>
+
+        <div style="margin-top:12px">
+          <button id="btnOpenTokens" class="glass-btn">Manage My Tokens</button>
+        </div>
+      </aside> -->
+      <div class="private-section">
+        <h3>🔒 Private Channels</h3>
+        <p>Create or join a private channel by token (shared across devices).</p>
+
+        <div class="token-box">
+          <input id="tokenInput" type="text" placeholder="Enter token to join">
+          <button onclick="joinPrivateChannel()">Join</button>
+        </div>
+
+        <div style="margin-top:12px">
+          <button id="btnOpenTokens" class="glass-btn">Manage My Tokens</button>
+        </div>
       </div>
 
-      <div style="margin-top:12px">
-        <button id="btnOpenTokens" class="glass-btn">Manage My Tokens</button>
+    </main>
+  </div>
+
+  <!-- TOKEN MODAL -->
+  <div id="tokenModalBg" class="modal-bg" aria-hidden="true">
+    <div class="modal">
+      <div class="modal-head">
+        <div class="modal-title">Private Tokens</div>
+        <button id="closeModal" class="icon-btn">✕</button>
       </div>
-    </aside>
-  </main>
-</div>
 
-<!-- TOKEN MODAL -->
-<div id="tokenModalBg" class="modal-bg" aria-hidden="true">
-  <div class="modal">
-    <div class="modal-head">
-      <div class="modal-title">Private Tokens</div>
-      <button id="closeModal" class="icon-btn">✕</button>
-    </div>
+      <div class="muted small">Tokens created on the server. Copy to share or delete to remove.</div>
 
-    <div class="muted small">Tokens created on the server. Copy to share or delete to remove.</div>
+      <div id="tokenList" class="token-list" aria-live="polite"></div>
 
-    <div id="tokenList" class="token-list" aria-live="polite"></div>
-
-    <div class="modal-actions">
-      <button id="btnGenerate" class="glass-btn primary">Create New Token</button>
-      <button id="btnRefreshTokens" class="glass-btn">Refresh</button>
+      <div class="modal-actions">
+        <button id="btnGenerate" class="glass-btn primary">Create New Token</button>
+        <button id="btnRefreshTokens" class="glass-btn">Refresh</button>
+      </div>
     </div>
   </div>
-</div>
 
-<script src="/static/script.js"></script>
+  <script src="/static/script.js"></script>
 </body>
+
 </html>

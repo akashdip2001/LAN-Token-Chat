@@ -1,4 +1,5 @@
 /* script.js - unified client logic for index / public / private pages */
+let username = localStorage.getItem("username");
 
 (() => {
   // common state
@@ -158,6 +159,26 @@
     ensureUsername();
     setupPublic();
   }
+
+  async function askUsername() {
+  let input = prompt("Enter your username:");
+  if (!input) input = "Guest";
+  username = input.trim();
+  localStorage.setItem("username", username);
+  renderUsername();
+}
+
+function renderUsername() {
+  document.getElementById("username-display").innerText = username;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  if (!username) askUsername();
+  else renderUsername();
+
+  // allow click to change
+  document.getElementById("username-display").onclick = askUsername;
+});
 
   function setupPublic() {
     // token modal wiring
