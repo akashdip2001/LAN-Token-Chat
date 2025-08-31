@@ -147,7 +147,9 @@ body {
     border-radius: 10px;
     border: 1px solid var(--border);
     background: rgba(255, 255, 255, .03);
-    cursor: pointer
+    cursor: pointer;
+    color: white;
+    font-weight: bold;
 }
 
 /* Grid */
