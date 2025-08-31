@@ -194,3 +194,91 @@ http://<your-local-ip>:8000
 * Encrypt messages for extra privacy.
 
 ---
+---
+
+# 🚩 Username Issue: `preview-xxxx` showing in Online Users
+
+## Problem
+
+When testing with multiple devices (e.g., PC username `12345` and mobile username `akashdip`), an **extra username** such as `preview-15f1` appears in the online users list.
+
+Example seen in UI:
+
+```
+Request
+12345
+Request
+akashdip
+Request
+preview-15f1
+```
+
+This extra user is **not a real user**, but comes from the **landing page preview feature**.
+
+---
+
+## Cause
+
+In `script.js`, the landing page (`index.html`) opens a dummy WebSocket to fetch live messages for the preview box:
+
+```js
+(function previewSocket() {
+  const anon = 'preview-' + Math.random().toString(16).slice(2, 6);
+  const socket = new WebSocket(`ws://${location.host}/ws/public/${anon}`);
+  state.previewSocket = socket;
+})();
+```
+
+* This generates a fake user (`preview-xxxx`) each time someone loads the landing page.
+* The server treats it as a real participant, so it shows up in the **online users list**.
+
+---
+
+## Solution
+
+### Option 1 (Recommended): **Hide preview usernames from the online list**
+
+Edit the `renderOnlineUsers(users)` function in `script.js`:
+
+```js
+function renderOnlineUsers(users) {
+  const wrap = document.getElementById('onlineUsers');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  users
+    .filter(u => !u.startsWith('preview-'))  // 🔥 filter out dummy preview clients
+    .forEach(u => {
+      const row = document.createElement('div'); row.className = 'user-pill';
+      const name = document.createElement('div'); name.textContent = u;
+      const btn = document.createElement('button'); btn.className = 'glass-btn small'; btn.textContent = 'Request';
+      btn.setAttribute('data-user', u);
+      row.appendChild(name); row.appendChild(btn);
+      wrap.appendChild(row);
+    });
+}
+```
+
+Now, only real usernames (e.g., `12345`, `akashdip`) appear.
+
+---
+
+### Option 2: **Disable preview feature**
+
+If the preview box on `index.html` is not needed, simply comment out the preview socket code:
+
+```js
+// (function previewSocket() {
+//   const anon = 'preview-' + Math.random().toString(16).slice(2, 6);
+//   const socket = new WebSocket(`ws://${location.host}/ws/public/${anon}`);
+//   state.previewSocket = socket;
+// })();
+```
+
+This will stop generating `preview-*` users but removes live preview on the landing page.
+
+---
+
+## Notes
+
+* This is **not a bug with username sessions**, but a side-effect of the preview socket.
+* Fixing it requires either **filtering out fake preview usernames** (preferred) or **removing the preview feature**.
