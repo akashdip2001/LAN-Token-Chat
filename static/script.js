@@ -1,5 +1,7 @@
 /* script.js - unified client logic for index / public / private pages */
-let username = localStorage.getItem("username");
+// keep username in sync with the chat_user / chat_username storage
+let username = localStorage.getItem("chat_username") || null;
+
 
 (() => {
   // common state
@@ -50,8 +52,14 @@ let username = localStorage.getItem("username");
     // Always update last active
     data.lastActive = Date.now();
     localStorage.setItem("chat_user", JSON.stringify(data));
+
+    // keep username in all places the app expects it
     username = data.username;
+    state.username = data.username;
+    localStorage.setItem('chat_username', data.username);
+
     renderUsername();
+
   }
 
   function showSessionPopup(data) {
@@ -79,10 +87,11 @@ let username = localStorage.getItem("username");
     }
   }
 
-
   function ensureUsername() {
     if (!state.username) {
-      let u = localStorage.getItem('chat_username') || prompt("Enter username:");
+      // Try chat_user object first (new session format)
+      const stored = JSON.parse(localStorage.getItem('chat_user') || 'null');
+      let u = (stored && stored.username) || localStorage.getItem('chat_username') || prompt("Enter username:");
       while (!u) u = prompt("Username required:");
       state.username = u.trim();
       localStorage.setItem('chat_username', state.username);
@@ -289,7 +298,12 @@ let username = localStorage.getItem("username");
 
       const newData = { username: u.trim(), password: pass.trim(), lastActive: Date.now() };
       localStorage.setItem("chat_user", JSON.stringify(newData));
+
+      // keep all username places synchronized
       username = newData.username;
+      state.username = newData.username;
+      localStorage.setItem('chat_username', newData.username);
+
       renderUsername();
       alert(`Account updated! New username: ${newData.username}`);
     }
